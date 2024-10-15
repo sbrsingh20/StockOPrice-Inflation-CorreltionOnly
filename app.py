@@ -18,9 +18,11 @@ expected_inflation = st.sidebar.number_input('Enter Expected Upcoming Inflation 
 # Function to fetch details for a specific stock
 def get_stock_details(stock_symbol):
     inflation_row = inflation_data[inflation_data['Symbol'] == stock_symbol]
+    income_row = income_data[income_data['Stock Name'] == stock_symbol]
 
-    if not inflation_row.empty:
+    if not inflation_row.empty and not income_row.empty:
         inflation_details = inflation_row.iloc[0]
+        income_details = income_row.iloc[0]
 
         st.subheader(f'Details for {stock_symbol}')
         
@@ -29,13 +31,13 @@ def get_stock_details(stock_symbol):
         st.write(inflation_row)
 
         # Generate projections based on expected inflation
-        generate_projections(inflation_details, expected_inflation)
+        generate_projections(inflation_details, income_details, expected_inflation)
     else:
         st.warning('Stock symbol not found in the data.')
 
 # Function to generate projections based on expected inflation
-def generate_projections(inflation_details, expected_inflation):
-    latest_event_value = inflation_details['Latest Event Value']  # Getting the actual inflation value
+def generate_projections(inflation_details, income_details, expected_inflation):
+    latest_event_value = income_details['Latest Event Value']  # Getting the actual inflation value from income details
     inflation_change = expected_inflation - latest_event_value
 
     # Create a DataFrame to store the results
