@@ -49,13 +49,16 @@ def generate_projections(inflation_details, income_details, expected_inflation):
         price_change = inflation_details['Event Coefficient'] * inflation_change
         projected_price = latest_close_price + price_change
 
-        # Append the projected data to the DataFrame
-        projections = projections.append({
+        # Create a DataFrame for the projected stock price
+        new_row = pd.DataFrame([{
             'Parameter': 'Projected Stock Price',
             'Current Value': latest_close_price,
             'Projected Value': projected_price,
             'Change': price_change
-        }, ignore_index=True)
+        }])
+
+        # Use pd.concat to add the new row to projections
+        projections = pd.concat([projections, new_row], ignore_index=True)
 
     # Include all columns from Inflation Event Data in projections
     for column in inflation_details.index:
@@ -65,13 +68,16 @@ def generate_projections(inflation_details, income_details, expected_inflation):
                 projected_value = current_value * (1 + inflation_change / 100)  # Project based on inflation change
                 change = projected_value - current_value
                 
-                # Append to projections DataFrame
-                projections = projections.append({
+                # Create a DataFrame for each projected data point
+                new_row = pd.DataFrame([{
                     'Parameter': column,
                     'Current Value': current_value,
                     'Projected Value': projected_value,
                     'Change': change
-                }, ignore_index=True)
+                }])
+
+                # Use pd.concat to add the new row to projections
+                projections = pd.concat([projections, new_row], ignore_index=True)
 
     # Display the projections table
     st.write("### Projected Changes in Inflation Event Data")
